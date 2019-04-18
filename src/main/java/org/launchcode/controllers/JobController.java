@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.launchcode.models.Job;
 
 import javax.validation.Valid;
 
@@ -24,7 +25,8 @@ public class JobController {
     public String index(Model model, int id) {
 
         // TODO #1 - get the Job with the given ID and pass it into the view
-
+        Job ajob = jobData.findById(id);
+        model.addAttribute("job", ajob);
         return "job-detail";
     }
 
@@ -41,7 +43,25 @@ public class JobController {
         // new Job and add it to the jobData data store. Then
         // redirect to the job detail view for the new Job.
 
-        return "";
+
+
+
+
+
+        if (errors.hasFieldErrors()) {
+            return "new-job";
+        }
+
+        Job new_job = new Job();
+        model.addAttribute("jobForm", jobForm );
+        new_job.setName(jobForm.getName());
+        new_job.setEmployer(jobData.getEmployers().findById(jobForm.getEmployerId()));
+        new_job.setLocation(jobData.getLocations().findById(jobForm.getLocationId()));
+        new_job.setCoreCompetency(jobData.getCoreCompetencies().findById(jobForm.getCoreCompetencyId()));
+        new_job.setPositionType(jobData.getPositionTypes().findById(jobForm.getPositionTypeId()));
+        jobData.add(new_job);
+
+        return "redirect:?id=" + new_job.getId();
 
     }
 }
